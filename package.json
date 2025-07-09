@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/MeccaNassiri/bitemylip#readme",
   "dependencies": {
+    "@types/node": "^24.0.12",
+    "dotenv": "^17.1.0",
     "mysql2": "^3.14.1"
   }
 }
