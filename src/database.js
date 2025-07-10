@@ -28,11 +28,22 @@ class User {
     }
 }
 
-async function addNewUser(username, password, email) {
-    return false;
+export async function addNewUser(username, password, email) {
+    let doesUserExist = await getUserByEmail(email);
+    if (doesUserExist !== null) {
+        return false;
+    }
+
+    const [result] = await pool.query(`
+    INSERT INTO ${usersTableName}
+    (username, password, email)
+    VALUES (?, ?, ?)
+    `, [username, password, email]);
+
+    return result.affectedRows >= 1;
 }
 
-function processDatabaseSelectUserReturn(rows) {
+export function processDatabaseSelectUserReturn(rows) {
     if (Array.isArray(rows) && rows.length) {
         return rows[0];
     }
@@ -40,7 +51,7 @@ function processDatabaseSelectUserReturn(rows) {
     return null;
 }
 
-async function getUserById(id) {
+export async function getUserById(id) {
     let [rows] = await pool.query(`
     SELECT *
     FROM ${usersTableName}
@@ -51,7 +62,7 @@ async function getUserById(id) {
     return processDatabaseSelectUserReturn(rows);
 }
 
-async function getUserByUsername(username) {
+export async function getUserByUsername(username) {
     let [rows] = await pool.query(`
     SELECT *
     FROM ${usersTableName}
@@ -62,7 +73,7 @@ async function getUserByUsername(username) {
     return processDatabaseSelectUserReturn(rows);
 }
 
-async function getUserByEmail(email) {
+export async function getUserByEmail(email) {
     let [rows] = await pool.query(`
     SELECT *
     FROM ${usersTableName}
