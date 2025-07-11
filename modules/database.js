@@ -3,13 +3,21 @@ import mysql from 'mysql2';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const musicInfoTableName = 'mecca_music_info';
 const usersTableName = 'users';
 
-const pool = mysql.createPool({
+const music_info_pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
+    database: process.env.MYSQL_MUSIC_INFO_DATABASE
+}).promise();
+
+const users_pool = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_USERS_DATABASE
 }).promise();
 
 class User {
@@ -34,7 +42,7 @@ export async function addNewUser(username, password, email) {
         return false;
     }
 
-    const [result] = await pool.query(`
+    const [result] = await users_pool.query(`
     INSERT INTO ${usersTableName}
     (username, password, email)
     VALUES (?, ?, ?)
@@ -43,7 +51,7 @@ export async function addNewUser(username, password, email) {
     return result.affectedRows >= 1;
 }
 
-export function processDatabaseSelectUserReturn(rows) {
+function processDatabaseSelectUserReturn(rows) {
     if (Array.isArray(rows) && rows.length) {
         return rows[0];
     }
@@ -52,7 +60,7 @@ export function processDatabaseSelectUserReturn(rows) {
 }
 
 export async function getUserById(id) {
-    let [rows] = await pool.query(`
+    let [rows] = await users_pool.query(`
     SELECT *
     FROM ${usersTableName}
     WHERE id = ?
@@ -63,7 +71,7 @@ export async function getUserById(id) {
 }
 
 export async function getUserByUsername(username) {
-    let [rows] = await pool.query(`
+    let [rows] = await users_pool.query(`
     SELECT *
     FROM ${usersTableName}
     WHERE username = ?
@@ -74,7 +82,7 @@ export async function getUserByUsername(username) {
 }
 
 export async function getUserByEmail(email) {
-    let [rows] = await pool.query(`
+    let [rows] = await users_pool.query(`
     SELECT *
     FROM ${usersTableName}
     WHERE email = ?

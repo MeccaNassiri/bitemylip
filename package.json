@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/MeccaNassiri/bitemylip#readme",
   "dependencies": {
+    "@types/express": "^5.0.3",
     "@types/node": "^24.0.12",
     "dotenv": "^17.1.0",
     "express": "^5.1.0",
